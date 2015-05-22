@@ -9,6 +9,10 @@ body {
   border-color: #009900;
 }
 
+.art {
+	text-shadow: 0.1em 0.1em #333
+}
+
 a {
   text-decoration: none;
   color: #00ffff;
