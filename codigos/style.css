@@ -1,0 +1,21 @@
+body {
+	background: #000000;
+}
+
+#menu-link:hover {
+  background-color: white;
+  border-width: 1px;
+  border-radius: 3px;
+  border-color: #009900;
+}
+
+a {
+  text-decoration: none;
+  color: #00ffff;
+  font-size: 15px;
+  font-family: "Arial Black", "Georgia", "Courier New", "sans-serif";
+}
+
+a:hover {
+  color: #000000;
+}
